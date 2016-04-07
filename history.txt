@@ -1,0 +1,42 @@
+Microbe - Microbial Simulation
+
+Version
+1.0	    March 8, 2009
+
+1.1     August 22, 2009
+-added 'from pygame import bufferproxy'.
+ corrects import error with pygame/surfarray/numpy/py2exe.
+-updated interface panel to use Interphase module.
+
+1.2     September 5, 2009
+-updated matrix.display(), matrix.set_gradient(), matrix_interface.file_load().
+-updated amoeba.move_animate(), added amoeba.amoeba_animate().
+-compiled amoeba_animate() code using Cython.
+ Linux: animate.so, Windows: animate.pyd, else use inline Python.
+-updated Interphase module.
+
+1.21    December 23, 2009
+-recompiled amoeba animate function with Cython, due to the upgrade to Numpy 1.4 on Linux, which has incompatible numpy.dtype issues.
+-Modified code to attempt to import different animate animate compiled against earlier and new Numpy version.
+-replaced pygame.init() with separate module init.
+-packaged for Linux and Windows using cx_Freeze.
+
+1.22    May 22, 2011
+-updated MatrixInterface for latest version of Interphase.
+-changed DisplayMsg to Text.
+-updated Matrix.__init__() self.media=numpy.fromfunction() to avoid div by zero
+-updated Evolve.genetics() to include crossovers
+-updated Cell.__init__() to random start orientation
+-updated Control() adding control tool repeat click
+-updated Control() rclick alt to ctrl&shift
+
+1.23    June 5, 2011
+-reorganized program to enhance modular aspect
+-updated Matrix.add_creature() to pass matrix instance to Cell
+-updated Control to pass matrix instance and to set matrix.control
+-updated MatrixInterface to pass matrix and control instances
+-updated Matrix.add_creature() to accept str name of Cell
+-updated Matrix.add_creature() to stop random position
+-updated Amoeba.__init__() to random start orientation
+-updated MatrixInterface.file_save() to reset controls
+
