@@ -125,6 +125,7 @@ class Control(object):
                         if self.compass_display:
                             if self.compass_rose_bud.collidepoint(mousex,mousey):
                                 self.panel.set_moveable('Fixed')
+                                self.panel.set_panel_display(True)
                         else:
                             self.tool_activated = True
                             self.tool_timer = 250
@@ -267,6 +268,7 @@ class Control(object):
                     self.panel.set_panel_value('Tag')
                 elif event.key == pygame.K_i:  #interface panel toggle
                     self.panel.set_moveable('Fixed')
+                    self.panel.set_panel_display(True)
                 elif event.key == pygame.K_c:     #Use compass
                     if not self.compass_folding:
                         self.compass_use = not self.compass_use

@@ -53,8 +53,7 @@ class MatrixInterface(interphase.Interface):
             position = (315,90),
             color = (0,20,30),
             font_color = (0,120,160),
-            control_list = ['!'],
-            activated_toggle = False)
+            control_list = ['!'])
         self.add(
             identity = '__Help',
             control_type = 'control_toggle',
@@ -353,7 +352,10 @@ class MatrixInterface(interphase.Interface):
                 ctrl['Control'].set_active(False)
                 ctrl['Query'].set_active(True)
                 ctrl['__Label'].set_value('Quit?')
-                self.set_moveable('Fixed')
+                if not self.is_moveable('Fixed'):
+                    self.set_moveable('Fixed')
+                if not self.is_panel_display():
+                    self.set_panel_display(True)
                 self.input_mode = 'Quit'
             elif cmd == 'cancel':
                 cancel = True
@@ -368,7 +370,10 @@ class MatrixInterface(interphase.Interface):
             ctrl['Control'].set_active(True)
             ctrl['Query'].set_active(False)
             ctrl['__Label'].set_value('')
-            self.set_moveable('Fixed')
+            if self.is_moveable('Fixed'):
+                self.set_moveable('Fixed')
+            if not self.is_panel_display():
+                self.set_panel_display(True)
             self.input_mode = None
 
     def input_commands(self, state):
@@ -461,8 +466,11 @@ class MatrixInterface(interphase.Interface):
                 if folding:
                     state.controls['Compass'].previous()
             elif state.control == '__Fix':
-                self.set_moveable()
-                self.set_panel_display()
+                self.set_moveable('Fixed')
+                if self.is_moveable('Fixed'):
+                    self.set_panel_display(False)
+                else:
+                    self.set_panel_display(True)
             elif state.control == '__Help':
                 self.set_tips_display()
         self.display_info()
