@@ -39,14 +39,6 @@ try:
 except ImportError:
     raise ImportError, "Pygame and Numpy modules are required."
 
-if not profiling:
-    try:
-        import psyco
-        psyco.full()
-    except ImportError:
-        if monitoring:
-            print("Warning: Psyco module recommended.")
-
 if not monitoring:
     import warnings
     warnings.filterwarnings("ignore")
