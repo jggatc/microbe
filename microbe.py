@@ -17,18 +17,7 @@ Copyright (C) 2009 James Garnon
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-Microbe version 1.23
-Download Site: http://gatc.ca
-
-Dependencies:
-    Python 2.5:             http://www.python.org/
-    Pygame 1.8:             http://www.pygame.org/
-    Numpy 1.4:              http://numpy.scipy.org/
-    Psyco (optional):       http://psyco.sourceforge.net/
 """
-
-version = '1.23'
 
 monitoring = False
 profiling = False
@@ -43,7 +32,7 @@ if not monitoring:
     import warnings
     warnings.filterwarnings("ignore")
 
-import optparse
+import optparse, sys
 
 import interphase      #interface control
 from matrix import Matrix
@@ -66,41 +55,33 @@ def program_options():
     program_usage = "%prog [options]"
     program_desc = ("Microbe - Microbial Simulation")
     parser = optparse.OptionParser(usage=program_usage,description=program_desc)
-    parser = optparse.OptionParser(version="Microbe "+version)
     parser.set_defaults(evolve=False)
-    parser.add_option("--license", dest="license", action="store_true", help="display program license")
     parser.add_option("-d", "--doc", dest="doc", action="store_true", help="display program documentation")
     parser.add_option("-s", dest="species_added", action="store", help="-s algae:bacterium:paramecium:amoeba:ciliate")
     parser.add_option("-e", dest="species_evolving", action="store", help="-e bacterium:paramecium:amoeba:ciliate")
     parser.add_option("-g", dest="display_gamma", action="store", help="-g value (value: 0.5 to 3.0)")
     (options, args) = parser.parse_args()
-    if options.license:
-        try:
-            license_info = open('license.txt')
-        except IOError:
-            print("GNU General Public License version 3 or later: http://www.gnu.org/licenses/")
-            sys.exit()
-        for line_no, line in enumerate(license_info):
-            print(line),
-            if line_no and not line_no % 20:
-                answer = raw_input("press enter to continue, 'q' to quit: ")
-                if answer == 'q':
-                    break
-        license_info.close()
-        sys.exit()
     if options.doc:
         try:
-            documentation = open('readme.txt')
+            docfile = open('README.txt')
         except IOError:
             print("Documentation not found.")
             sys.exit()
-        for line_no, line in enumerate(documentation):
+        try:
+            import textwrap
+            doc = []
+            for line in docfile.readlines():
+                text = textwrap.wrap(line, 80)
+                if text:
+                    for l in text:
+                        doc.append(l+'\n')
+                else:
+                    doc.append('\n')
+        except ImportError:
+            doc = docfile.readlines()
+        docfile.close()
+        for line in doc:
             print(line),
-            if line_no and not line_no % 20:
-                answer = raw_input("press enter to continue, 'q' to quit: ")
-                if answer == 'q':
-                    break
-        documentation.close()
         sys.exit()
     if options.species_added:
         config['species_added'] = options.species_added

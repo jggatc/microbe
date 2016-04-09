@@ -40,3 +40,6 @@ Version
 -updated Amoeba.__init__() to random start orientation
 -updated MatrixInterface.file_save() to reset controls
 
+1.24_dev
+-update Interphase module.
+
