@@ -53,7 +53,6 @@ class Matrix(object):
         self.nutrient = numpy.zeros((self.x,self.y), 'i')
         self.toxin_presense = False     #if toxin used
         self.trace = numpy.zeros((self.x,self.y), 'B')      #bacteria scent trace
-        self.trace_pos = numpy.zeros((self.dx,self.dy), 'B')
         self.trace_update = 0
         self.trace_x = 0
         self.trace_y = 0
@@ -462,8 +461,8 @@ class Matrix(object):
     def bug_trace_update(self):
         self.trace_update += 1
         if self.trace_update > 2:   #update trace decay at rate that gradient detectable over cell
-            self.trace_pos = numpy.greater(self.trace[0+(self.dx*self.trace_x):self.dx+(self.dx*self.trace_x),0+(self.dy*self.trace_y):self.dy+(self.dy*self.trace_y)], 9)
-            self.trace[0+(self.dx*self.trace_x):self.dx+(self.dx*self.trace_x),0+(self.dy*self.trace_y):self.dy+(self.dy*self.trace_y)] -= self.trace_pos *10
+            trace_view = self.trace[0+(self.dx*self.trace_x):self.dx+(self.dx*self.trace_x),0+(self.dy*self.trace_y):self.dy+(self.dy*self.trace_y)]
+            trace_view[trace_view>9] -= 10
             self.trace_update = 0
             self.trace_x += 1
             if self.trace_x > 2:
