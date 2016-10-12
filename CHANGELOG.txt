@@ -40,6 +40,7 @@ Version
 -updated Amoeba.__init__() to random start orientation
 -updated MatrixInterface.file_save() to reset controls
 
-1.24_dev
--update Interphase module.
+1.24    October 12, 2016
+-update interphase module.
+-update matrix.bug_trace_update to address numpy casting issue.
 

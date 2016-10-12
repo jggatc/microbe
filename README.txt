@@ -1,5 +1,5 @@
 Microbe - Microbial Simulation
-Version 1.23
+Version 1.24
 http://gatc.ca/projects/microbe/
 
 Microbe is a microbial simulation coded in Python and Pygame. The source is run with 'python microbe.py'. Also available are executables that have Python dependencies included, and run with './microbe' (Linux) or 'microbe.exe' (Windows). Microbe is released under the GPL3 License, see LICENSE.txt for further information.
@@ -7,7 +7,7 @@ Microbe is a microbial simulation coded in Python and Pygame. The source is run 
 Dependencies:
     Python 2.5+:         http://www.python.org/
     Pygame 1.8+:         http://www.pygame.org/
-    Numpy 1.4:          http://numpy.scipy.org/
+    Numpy 1.4+:          http://numpy.scipy.org/
 
 Command line options:
   -h, --help           show this help message and exit
