@@ -26,7 +26,7 @@ try:
     import pygame
     import numpy
 except ImportError:
-    raise ImportError, "Pygame and Numpy modules are required."
+    raise ImportError("Pygame and Numpy modules are required.")
 
 if not monitoring:
     import warnings
@@ -80,8 +80,7 @@ def program_options():
         except ImportError:
             doc = docfile.readlines()
         docfile.close()
-        for line in doc:
-            print(line),
+        print(''.join(doc))
         sys.exit()
     if options.species_added:
         config['species_added'] = options.species_added

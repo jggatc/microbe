@@ -9,7 +9,7 @@ import pygame.bufferproxy
 import numpy
 import random
 import os
-import cPickle
+import pickle
 
 from cells import Algae, Bacterium, Paramecium, Amoeba, Ciliate
 
@@ -385,7 +385,7 @@ class Matrix(object):
         except IOError:
             return False
         else:
-            cPickle.dump(bug_info, bug_file)
+            pickle.dump(bug_info, bug_file)
             bug_file.close()
             return fn
 
@@ -397,7 +397,7 @@ class Matrix(object):
             if not check:
                 return False
             bug_file = open(fn, 'rb')
-            bug_info = cPickle.load(bug_file)
+            bug_info = pickle.load(bug_file)
             bug_file.close()
             bug_species_id, bug_id, bug_gene = bug_info
             bug_species = self.species[bug_species_id]

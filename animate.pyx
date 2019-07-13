@@ -1,26 +1,25 @@
 """
 Amoeba Animate
 
-Animate function compiled using Cython. Called by Microbe.py, and if import fails (not Linux/Windows or error), will use incode Python animate function.
+The amoeba_animate function is compiled with Cython and may require compiling for system dependencies, otherwise it will use Python fallback code.
 
-Linux (create .so):
-NumPy <v1.4:
+Compile for Python 2.7 on Linux 32-bit:
 cython animate.pyx
-gcc -shared -pthread -fPIC -fwrapv -O2 -Wall -fno-strict-aliasing -I/usr/include/python2.6 -o animate.so animate.c
-NumPy >v1.4:
-Note: need to have new compilation because of incompatible numpy.dtype. Numpy v1.4 was compiled from source to /usr/local/lib, so require to include path.
-cython -I/usr/include/python2.6 -I/usr/local/lib/python2.6/dist-packages/numpy/core/include/numpy animate_1_4.pyx
-gcc -shared -pthread -fPIC -fwrapv -O2 -Wall -fno-strict-aliasing -I/usr/include/python2.6 -I/usr/local/lib/python2.6/dist-packages/numpy/core/include -o animate_1_4.so animate_1_4.c
+gcc -shared -pthread -fPIC -fwrapv -O2 -Wall -fno-strict-aliasing -I/usr/include/python2.7 -o animate.so animate.c
 
-Windows (create .pyd):
-python setup.py build_ext --inplace (create .pyd)
+Compile for Python 3.5 on Linux 32-bit:
+cp animate.pyx animate3.pyx
+cython animate.pyx -o animate3.c
+gcc -shared -pthread -fPIC -fwrapv -O2 -Wall -fno-strict-aliasing -I/usr/include/python3.5m -o animate3.so animate3.c
+
+Refer to Cython documentation for compilation with other systems.
 """
 
 import random
 import numpy
 cimport numpy
 
-DTYPE = numpy.int
+DTYPE = numpy.int_
 ctypedef numpy.int_t DTYPE_t
 
 cimport cython

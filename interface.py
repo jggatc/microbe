@@ -224,8 +224,8 @@ class MatrixInterface(interphase.Interface):
     def set_gene(self, state):
         if self.matrix.bug_tag and self.matrix.bug_tag.gene:
             if not self.initialize:
-                state.controls['Select Gene'].set_list(self.matrix.bug_tag.gene.keys())
-                state.controls['Select Gene'].set_tip(self.matrix.bug_tag.gene_info.values())
+                state.controls['Select Gene'].set_list(list(self.matrix.bug_tag.gene.keys()))
+                state.controls['Select Gene'].set_tip(list(self.matrix.bug_tag.gene_info.values()))
                 state.controls['Select Gene'].set_active(True)
                 state.controls['Select Allele'].set_active(False)
                 state.controls['__Label'].set_value('Select gene')

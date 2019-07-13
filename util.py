@@ -20,14 +20,14 @@ def load_image(file_name, frames=1, path='data', colorkey=None, errorhandle=True
             image = pygame.image.load(full_name)
             width, height = image.get_size()
             width = width // frames
-            for frame in xrange(frames):
+            for frame in range(frames):
                 frame_num = width * frame
                 image_frame = image.subsurface((frame_num,0), (width,height)).copy()
                 images.append(image_frame)
             return images
-    except pygame.error, message:
+    except pygame.error:
         if errorhandle:
-            raise SystemExit, message
+            raise
         else:
             print(message)
             return None
@@ -45,7 +45,7 @@ def load_image(file_name, frames=1, path='data', colorkey=None, errorhandle=True
 def trig_compute():
     sin_table = {}
     cos_table = {}
-    for angle in xrange(0,360):
+    for angle in range(0,360):
         angle_rad = angle * math.pi/180
         sin_angle = math.sin(angle_rad)
         cos_angle = math.cos(angle_rad)

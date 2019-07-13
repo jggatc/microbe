@@ -10,18 +10,17 @@ import numpy
 import math
 import random
 import os
-import cPickle
+import pickle
 
 import interphase
 from util import load_image, sin_table, cos_table
-if os.name in ('posix', 'nt'):  #animate.c compiled
+try:    #animate.c compiled
+    import animate
+except:
     try:
-        import animate
+        import animate3 as animate
     except:
-        try:
-            import animate_1_4 as animate
-        except:
-            pass
+        pass
 
 
 class Evolve(object):
@@ -36,7 +35,7 @@ class Evolve(object):
             gene = {}
             mutation = random.random() < mutation_rate    #if inherit with mutation
             if not inherit or mutation:     #set genes chosen randomly from alleles
-                for genex in xrange(1,genome+1):
+                for genex in range(1,genome+1):
                     gene[genex] = random.randrange(*alleles[genex])
                 if mutation:
                     mutant_gene = random.choice((gene.keys()))  #mutate single gene
@@ -122,7 +121,7 @@ class Cell( pygame.sprite.Sprite, Evolve ):
                 image = load_image(cell_image)
                 width, height = image.get_size()
                 image_width = width // frames
-                for frame in xrange(frames):
+                for frame in range(frames):
                     frame_num = image_width * frame
                     image_frame = image.subsurface((frame_num,0), (image_width,height)).copy()
                     self.species.image.append(image_frame)
@@ -160,7 +159,7 @@ class Cell( pygame.sprite.Sprite, Evolve ):
         if 'File' in gene:      #For evolved species, gene in file
             fn = os.path.join('data', gene['File'])
             bug_file = open(fn, 'rb')
-            gene = cPickle.load(bug_file)
+            gene = pickle.load(bug_file)
             bug_file.close()
         if self.matrix.evolution and self.species.evolving:
             genome = len(gene)
@@ -630,25 +629,25 @@ class Amoeba(Cell):
         if self.species.image is None:
             self.species.screen_amoeba = pygame.Surface((50,50))
             self.species.image = self.species.screen_amoeba
-        self.amoeba = numpy.zeros((50,50), 'i')
-        for x in xrange(10,40,2):
-            for y in xrange(10,40,2):
+        self.amoeba = numpy.zeros((50,50), numpy.int_)
+        for x in range(10,40,2):
+            for y in range(10,40,2):
                 self.amoeba[x,y] = self.color
-        self.amoebas = numpy.zeros((150,300), 'i')     #amoeba move array with display overlap
+        self.amoebas = numpy.zeros((150,300), numpy.int_)     #amoeba move array with display overlap
         self.amoebas[self.step_x-25:self.step_x+25,self.step_y-25:self.step_y+25] = self.amoeba
         try:
             self.animate = animate.amoeba_animate   #compiled
         except NameError:
             self.animate = self.amoeba_animate
-        amoebas_indices = [(x,y) for x in xrange(50) for y in xrange(50)]
+        amoebas_indices = [(x,y) for x in range(50) for y in range(50)]
         random.shuffle(amoebas_indices)
         self.amoebas_indices = {}
-        for i in xrange(100):
+        for i in range(100):
             self.amoebas_indices[i] = amoebas_indices[i*25:(i*25)+25]
-        self.amoebas_indices_keys = self.amoebas_indices.keys()
+        self.amoebas_indices_keys = list(self.amoebas_indices.keys())
         random.shuffle(self.amoebas_indices_keys)
         self.amoebas_index = 0
-        for update_count in xrange(50):
+        for update_count in range(50):
             self.move_animate()     #initial walk to form
         self.image, self.rect = self.update_image()
         self.direction = random.randrange(360)
@@ -708,11 +707,11 @@ class Amoeba(Cell):
 
     def move(self):
         self.velocity = 2
-        for i in xrange(self.velocity):
+        for i in range(self.velocity):
             self.motion()
         self.check_interact_members()
         if self.matrix.creature_inview(self):
-            for i in xrange(self.velocity):
+            for i in range(self.velocity):
                 self.move_animate()
             self.image, self.rect = self.update_image()
         else:
@@ -747,14 +746,14 @@ class Amoeba(Cell):
     def move_animate(self):
         if self.reverse == True:
             self.amoeba = self.amoebas[self.step_x-25:self.step_x+25,self.step_y-25:self.step_y+25]
-            self.amoebas = numpy.zeros((150,300), 'i')
+            self.amoebas = numpy.zeros((150,300), numpy.int_)
             self.step_y = 200   #place amoeba at beginning of treadmill
             self.amoeba = numpy.fliplr(self.amoeba)
             self.amoebas[self.step_x-25:self.step_x+25,self.step_y-25:self.step_y+25] = self.amoeba
             self.reverse = False
         if self.step_y < 50:    #when amoeba at end of treadmill
             self.amoeba = self.amoebas[self.step_x-25:self.step_x+25,self.step_y-25:self.step_y+25]
-            self.amoebas = numpy.zeros((150,300), 'i')
+            self.amoebas = numpy.zeros((150,300), numpy.int_)
             self.step_y = 200   #place amoeba at beginning of treadmill
             self.amoebas[self.step_x-25:self.step_x+25,self.step_y-25:self.step_y+25] = self.amoeba
         self.amoebas = self.animate(self.amoebas, self.amoebas_indices[self.amoebas_indices_keys[self.amoebas_index]], self.step_x, self.step_y, self.color)

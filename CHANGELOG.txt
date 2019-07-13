@@ -44,3 +44,7 @@ Version
 -update interphase module.
 -update matrix.bug_trace_update to address numpy casting issue.
 
+1.25    July 6, 2019
+-update for python 2/3 compatibility.
+-update amoeba animate function to int_ type and recompiled.
+
