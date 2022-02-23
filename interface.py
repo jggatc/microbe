@@ -16,14 +16,29 @@ class MatrixInterface(interphase.Interface):
     def __init__(self, matrix, control):
         self.matrix = matrix
         self.control = control
-        self.tool_type = ['Add_Gradient', 'Add_Toxin', 'Add_Algae', 'Add_Bacterium', 'Add_Paramecium', 'Add_Ciliate', 'Add_Amoeba']
-        self.command_type = ['Magnify', 'Track', 'Tag', 'Evolution', 'Set Gene', 'Set ID', 'Save', 'Load', 'Config']
+        self.tool_type = ['Add_Gradient', 'Add_Toxin', 'Add_Algae',
+                          'Add_Bacterium', 'Add_Paramecium',
+                          'Add_Ciliate', 'Add_Amoeba']
+        self.command_type = ['Magnify', 'Track', 'Tag', 'Evolution',
+                             'Set Gene', 'Set ID', 'Save', 'Load', 'Config']
         self.tools = []
         for tool in self.tool_type:
             self.tools.append('__'+tool)
         self.tools.extend(self.command_type)
-        self.tips_list = ['Add Gradient', 'Add Toxin', 'Add Algae', 'Add Bacterium', 'Add Paramecium', 'Add Ciliate', 'Add Amoeba', 'Use Magnifier', 'Track Microbe', 'Tag Microbe', 'Evolution Mode', 'Set Gene', 'Set ID', 'Save Microbe', 'Load Microbe', 'Configuration']
-        interphase.Interface.__init__(self, position=(self.matrix.dx//2,self.matrix.dy-50), image='panel.png', color=(0,5,10), size=(350,100), moveable=True, position_offset=(0,87), control_image='none', button_image=['button.png'], control_minsize=(35,35), control_size='auto', control_response=100)
+        self.tips_list = ['Add Gradient', 'Add Toxin', 'Add Algae',
+                          'Add Bacterium', 'Add Paramecium',
+                          'Add Ciliate', 'Add Amoeba',
+                          'Use Magnifier', 'Track Microbe',
+                          'Tag Microbe', 'Evolution Mode',
+                          'Set Gene', 'Set ID', 'Save Microbe',
+                          'Load Microbe', 'Configuration']
+        interphase.Interface.__init__(
+            self, position=(self.matrix.dx//2,self.matrix.dy-50),
+            image='panel.png', color=(0,5,10), size=(350,100),
+            moveable=True, position_offset=(0,87),
+            control_image='none', button_image=['button.png'],
+            control_minsize=(35,35), control_size='auto',
+            control_response=100)
         self.input_mode = None
         self.bug_tag = None
         self.gene_select = None
@@ -184,14 +199,17 @@ class MatrixInterface(interphase.Interface):
             try:
                 if self.matrix.bug_tag:
                     if self.info_update:
-                        self.get_control('ID').set_value('ID:'+str(self.matrix.bug_tag.identity))
+                        self.get_control('ID').set_value(
+                            'ID:'+str(self.matrix.bug_tag.identity))
                         if self.matrix.bug_tag.gene:
-                            genes = '/'.join([str(x) for x in self.matrix.bug_tag.gene.values()])
+                            genes = '/'.join([str(x)
+                                for x in self.matrix.bug_tag.gene.values()])
                             self.get_control('Genes').set_value('Genes:'+genes)
                         self.info_update = False
                 if self.matrix.evolution:
-                    if self.matrix.bug_tag and self.matrix.bug_tag.species.evolving:
-                        fitness = '%0.1f' %self.matrix.bug_tag.fitness
+                    if (self.matrix.bug_tag and
+                            self.matrix.bug_tag.species.evolving):
+                        fitness = '%0.1f' % self.matrix.bug_tag.fitness
                         self.get_control('Fitness').set_value(fitness)
             except AttributeError:
                 pass
@@ -224,8 +242,10 @@ class MatrixInterface(interphase.Interface):
     def set_gene(self, state):
         if self.matrix.bug_tag and self.matrix.bug_tag.gene:
             if not self.initialize:
-                state.controls['Select Gene'].set_list(list(self.matrix.bug_tag.gene.keys()))
-                state.controls['Select Gene'].set_tip(list(self.matrix.bug_tag.gene_info.values()))
+                state.controls['Select Gene'].set_list(
+                    list(self.matrix.bug_tag.gene.keys()))
+                state.controls['Select Gene'].set_tip(
+                    list(self.matrix.bug_tag.gene_info.values()))
                 state.controls['Select Gene'].set_active(True)
                 state.controls['Select Allele'].set_active(False)
                 state.controls['__Label'].set_value('Select gene')
@@ -235,17 +255,26 @@ class MatrixInterface(interphase.Interface):
             if not self.gene_select:
                 if state.button == 'Select Gene':
                     self.gene_select = int(state.values['Select Gene'])
-                    self.allele_select = self.matrix.bug_set_gene(self.matrix.bug_tag, self.gene_select, allele=True)
+                    self.allele_select = self.matrix.bug_set_gene(
+                        self.matrix.bug_tag, self.gene_select, allele=True)
             else:
                 if state.controls['__Label'].get_value() == 'Select gene':
                     state.controls['Select Gene'].set_active(False)
                     state.controls['Select Allele'].set_active(True)
-                    state.controls['Select Allele'].set_list(['__numeric', (self.allele_select[0], self.allele_select[1]-1)])
-                    state.controls['Select Allele'].set_value(self.matrix.bug_tag.gene[int(state.values['Select Gene'])])
-                    state.controls['Select Allele'].set_tip([self.matrix.bug_tag.gene_info[int(state.values['Select Gene'])]])
-                    state.controls['__Label'].set_value('Gene '+str(self.gene_select))
+                    state.controls['Select Allele'].set_list(
+                        ['__numeric',
+                        (self.allele_select[0], self.allele_select[1]-1)])
+                    state.controls['Select Allele'].set_value(
+                        self.matrix.bug_tag.gene[
+                            int(state.values['Select Gene'])])
+                    state.controls['Select Allele'].set_tip(
+                        [self.matrix.bug_tag.gene_info[
+                            int(state.values['Select Gene'])]])
+                    state.controls['__Label'].set_value(
+                        'Gene '+str(self.gene_select))
                 if state.button == 'Select Allele':
-                    self.matrix.bug_set_gene(self.matrix.bug_tag, self.gene_select, state.value)
+                    self.matrix.bug_set_gene(
+                        self.matrix.bug_tag, self.gene_select, state.value)
                     state.controls['Select Allele'].set_active(False)
                     state.controls['Select Gene'].set_active(True)
                     state.controls['__Label'].set_value('Select gene')
@@ -262,7 +291,8 @@ class MatrixInterface(interphase.Interface):
 
     def set_id(self, state):
         if self.matrix.bug_tag:
-            if not self.bug_tag or self.bug_tag is not self.matrix.bug_tag:
+            if (not self.bug_tag or
+                    self.bug_tag is not self.matrix.bug_tag):
                 self.bug_tag = self.matrix.bug_tag
                 pad = ' ' * (3-len(self.tag_id))
                 state.controls['__Label'].set_value('ID: ' + pad)
@@ -286,37 +316,49 @@ class MatrixInterface(interphase.Interface):
         check = os.path.exists(filename)
         return check
 
-    def file_save(self, state, file_root='species', file_ext='.dat', file_num=None):
+    def file_save(self, state, file_root='species', file_ext='.dat',
+                  file_num=None):
         if self.matrix.bug_tag:
             if not self.initialize:
                 self.filename = file_root + '_' + self.tag_id + file_ext
-                state.controls['__Label'].set_value('Save to ' + self.filename)
+                state.controls['__Label'].set_value(
+                    'Save to ' + self.filename)
                 self.control.tool = 'Track'
                 self.initialize = True
-            if state.control == 'Set ID' and len(self.tag_id) == 3 and not state.controls['Query'].is_active():
+            if (state.control == 'Set ID' and
+                    len(self.tag_id) == 3 and
+                    not state.controls['Query'].is_active()):
                 self.tag_id = ''
                 self.filename = file_root + '_' + self.tag_id + file_ext
-                state.controls['__Label'].set_value('Save to ' + self.filename)
+                state.controls['__Label'].set_value(
+                    'Save to ' + self.filename)
             if state.button == 'Set ID' and len(self.tag_id) < 3:
                 self.tag_id = self.tag_id + state.value
                 self.filename = file_root + '_' + self.tag_id + file_ext
-                state.controls['__Label'].set_value('Save to ' + self.filename)
+                state.controls['__Label'].set_value(
+                    'Save to ' + self.filename)
                 if len(self.tag_id) == 3:
                     self.filename = file_root + '_' + self.tag_id + file_ext
                     if not self.file_check(self.filename):
-                        self.matrix.bug_save(self.matrix.bug_tag, self.filename)
-                        state.controls['__Label'].set_value('Saved ' + self.filename)
+                        self.matrix.bug_save(self.matrix.bug_tag,
+                                             self.filename)
+                        state.controls['__Label'].set_value(
+                            'Saved ' + self.filename)
                     else:
-                        state.controls['__Label'].set_value('Overwrite ' + self.filename + '?')
+                        state.controls['__Label'].set_value(
+                            'Overwrite ' + self.filename + '?')
                         state.controls['Query'].set_active(True)
             elif state.button == 'Query':
                 if state.value == 'Yes':
-                    self.matrix.bug_save(self.matrix.bug_tag, self.filename, overwrite=True)
-                    state.controls['__Label'].set_value('Saved ' + self.filename)
+                    self.matrix.bug_save(self.matrix.bug_tag,
+                                         self.filename, overwrite=True)
+                    state.controls['__Label'].set_value(
+                        'Saved ' + self.filename)
                 elif state.value == 'No':
                     self.tag_id = ''
                     self.filename = file_root + '_' + self.tag_id + file_ext
-                    state.controls['__Label'].set_value('Save to ' + self.filename)
+                    state.controls['__Label'].set_value(
+                        'Save to ' + self.filename)
                 if state.controls['Query'].get_value() == 'Yes':
                     state.controls['Query'].next()
                 state.controls['Query'].set_active(False)
@@ -332,16 +374,19 @@ class MatrixInterface(interphase.Interface):
 
     def file_load(self, state):
         if not self.initialize:
-            state.controls['Files'].set_list(['__filelist', 'data', 'species', '.dat'])
+            state.controls['Files'].set_list(
+                ['__filelist', 'data', 'species', '.dat'])
             self.initialize = True
         if state.button == 'Files':
             self.file_select = state.value
-            state.controls['__Label'].set_value('Load ' + self.file_select)
+            state.controls['__Label'].set_value(
+                'Load ' + self.file_select)
             if self.file_check(self.file_select):
                 self.control.newspecies = self.file_select
                 self.control.tool = 'Load'
             else:
-                state.controls['__Label'].set_value(self.file_select + ' not found')
+                state.controls['__Label'].set_value(
+                    self.file_select + ' not found')
 
     def quit(self, state=None, cmd=None):
         cancel = False
@@ -393,15 +438,17 @@ class MatrixInterface(interphase.Interface):
         state = self.get_state()
         self.control.panel_displayed = state.panel_interact
         if state.control:
-            if state.control == 'Control':   
+            if state.control == 'Control':
                 if state.controls[state.control].is_activated():
                         if state.value[:2] == '__':
                             self.control.tool = state.value[2:]
                         elif state.value in ('Magnify', 'Track', 'Tag'):
                             self.control.tool = state.value
                             if state.value in ('Track', 'Tag'):
-                                state.controls['__Label'].set_value(state.value+' selection')
-                        elif state.value in ('Set Gene', 'Set ID', 'Save', 'Load'):
+                                state.controls['__Label'].set_value(
+                                    state.value+' selection')
+                        elif state.value in ('Set Gene', 'Set ID',
+                                             'Save', 'Load'):
                             self.input_mode = state.value
                         elif state.value == 'Config':
                             self.set_label_display(True)
@@ -435,7 +482,8 @@ class MatrixInterface(interphase.Interface):
                     self.info_active(True)
                 elif state.value == 'OFF':
                     self.info = False
-                    ctrl = self.get_control('ID','Genes','Fitness','Evolving')
+                    ctrl = self.get_control('ID','Genes',
+                                            'Fitness','Evolving')
                     for ctr in ctrl:
                         ctrl[ctr].set_active(False)
             elif state.control == 'Tag':

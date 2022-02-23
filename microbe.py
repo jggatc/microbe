@@ -41,10 +41,13 @@ from cells import Algae, Bacterium, Paramecium, Amoeba, Ciliate
 
 
 def program_options():
-    config = {'species_added':None, 'species_evolving':None, 'display_gamma':None}
+    config = {'species_added':None,
+              'species_evolving':None,
+              'display_gamma':None}
     try:
         config_file = open('config.ini')
-        cfg_setting = [line.strip().split(' ',1) for line in config_file if line[:1].isalpha()]
+        cfg_setting = [line.strip().split(' ',1) for line in config_file
+                       if line[:1].isalpha()]
         cfg_setting = dict(cfg_setting)
         for cfg in config:
             if cfg in cfg_setting:
@@ -54,12 +57,17 @@ def program_options():
         pass
     program_usage = "%prog [options]"
     program_desc = ("Microbe - Microbial Simulation")
-    parser = optparse.OptionParser(usage=program_usage,description=program_desc)
+    parser = optparse.OptionParser(
+        usage=program_usage,description=program_desc)
     parser.set_defaults(evolve=False)
-    parser.add_option("-d", "--doc", dest="doc", action="store_true", help="display program documentation")
-    parser.add_option("-s", dest="species_added", action="store", help="-s algae:bacterium:paramecium:amoeba:ciliate")
-    parser.add_option("-e", dest="species_evolving", action="store", help="-e bacterium:paramecium:amoeba:ciliate")
-    parser.add_option("-g", dest="display_gamma", action="store", help="-g value (value: 0.5 to 3.0)")
+    parser.add_option("-d", "--doc", dest="doc", action="store_true",
+                      help="display program documentation")
+    parser.add_option("-s", dest="species_added", action="store",
+                      help="-s algae:bacterium:paramecium:amoeba:ciliate")
+    parser.add_option("-e", dest="species_evolving", action="store",
+                      help="-e bacterium:paramecium:amoeba:ciliate")
+    parser.add_option("-g", dest="display_gamma", action="store",
+                      help="-g value (value: 0.5 to 3.0)")
     (options, args) = parser.parse_args()
     if options.doc:
         try:
@@ -89,11 +97,15 @@ def program_options():
     if options.display_gamma:
         config['display_gamma'] = options.display_gamma
     if config['species_added']:
-        config['species_added'] = config['species_added'].lower().split(':')
-        config['species_added'] = [sp.strip() for sp in config['species_added']]
+        config['species_added'] = (
+            config['species_added'].lower().split(':'))
+        config['species_added'] = [sp.strip()
+                                   for sp in config['species_added']]
     if config['species_evolving']:
-        config['species_evolving'] = config['species_evolving'].lower().split(':')
-        config['species_evolving'] = [sp.strip() for sp in config['species_evolving']]
+        config['species_evolving'] = (
+            config['species_evolving'].lower().split(':'))
+        config['species_evolving'] = [sp.strip()
+                                      for sp in config['species_evolving']]
     if config['display_gamma']:
         try:
             config['display_gamma'] = float(config['display_gamma'])
@@ -103,8 +115,16 @@ def program_options():
 
 
 def setup():
-    species = { 'algae':True, 'bacterium':True, 'paramecium':True, 'amoeba':True, 'ciliate':True }
-    species_class = { 'algae':Algae, 'bacterium':Bacterium, 'paramecium':Paramecium, 'amoeba':Amoeba, 'ciliate':Ciliate }
+    species = {'algae': True,
+               'bacterium': True,
+               'paramecium': True,
+               'amoeba': True,
+               'ciliate': True}
+    species_class = {'algae': Algae,
+                     'bacterium': Bacterium,
+                     'paramecium': Paramecium,
+                     'amoeba': Amoeba,
+                     'ciliate': Ciliate}
     config = program_options()
     if config['display_gamma']:
         gamma = config['display_gamma']
@@ -123,10 +143,15 @@ def setup():
     parameters['display_size'] = (500,500)
     parameters['gamma'] = gamma
     matrix = Matrix(parameters)
-    matrix.setup(algae=species['algae'],bacterium=species['bacterium'],paramecium=species['paramecium'],amoeba=species['amoeba'],ciliate=species['ciliate'])
+    matrix.setup(algae=species['algae'],
+                 bacterium=species['bacterium'],
+                 paramecium=species['paramecium'],
+                 amoeba=species['amoeba'],
+                 ciliate=species['ciliate'])
     if config['species_evolving']:
         for sp in species_class:
-            if sp in config['species_evolving'] and species_class[sp].gene:
+            if (sp in config['species_evolving'] and
+                    species_class[sp].gene):
                 species_class[sp].evolving = True
                 matrix.set_evolution(True)
     control = Control(matrix)

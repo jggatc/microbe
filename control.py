@@ -20,7 +20,10 @@ class Control(object):
         self.matrix.control = self
         pygame.key.set_repeat(100,10)
         self.tool = None
-        self.direction = {pygame.K_UP:'north', pygame.K_DOWN:'south', pygame.K_LEFT:'west', pygame.K_RIGHT:'east'}
+        self.direction = {pygame.K_UP: 'north',
+                          pygame.K_DOWN: 'south',
+                          pygame.K_LEFT: 'west',
+                          pygame.K_RIGHT: 'east'}
         self.mouse_x = 0
         self.mouse_y = 0
         self.quit = False
@@ -35,8 +38,10 @@ class Control(object):
         self.compass_rose = pygame.Rect(x-35,y-35,72,72)
         self.compass_rose_bud = pygame.Rect(0,0,10,10)
         self.compass_rose_bud.center = (x,y)
-        self.trace1 = [(x-35,y),(x-10,y-10),(x,y-35),(x+10,y-10),(x+35,y),(x+10,y+10),(x,y+35),(x-10,y+10)]
-        self.trace2 = [(x-20,y-20),(x,y-10),(x+20,y-20),(x+10,y),(x+20,y+20),(x,y+10),(x-20,y+20),(x-10,y)]
+        self.trace1 = [(x-35,y), (x-10,y-10), (x,y-35), (x+10,y-10),
+                       (x+35,y), (x+10,y+10), (x,y+35), (x-10,y+10)]
+        self.trace2 = [(x-20,y-20), (x,y-10), (x+20,y-20), (x+10,y),
+                       (x+20,y+20), (x,y+10), (x-20,y+20), (x-10,y)]
         n = pygame.Rect((0,0),(20,30))
         s = pygame.Rect((0,0),(20,30))
         w = pygame.Rect((0,0),(30,20))
@@ -54,7 +59,8 @@ class Control(object):
         ne.center=(x+20-offset,y-20+offset)
         sw.center=(x-20+offset,y+20-offset)
         se.center=(x+20-offset,y+20-offset)
-        self.dir = {'n':n, 's':s, 'w':w, 'e':e, 'nw':nw, 'ne':ne, 'sw':sw, 'se':se}
+        self.dir = {'n':n, 's':s, 'w':w, 'e':e,
+                    'nw':nw, 'ne':ne, 'sw':sw, 'se':se}
         self.clock = pygame.time.Clock()
         self.pause = False
         self.compass_folding = False
@@ -82,26 +88,35 @@ class Control(object):
             self.tool_timer_i = pygame.time.get_ticks()
         self.mouse_x, self.mouse_y = pygame.mouse.get_pos()
         if self.tool == 'Add_Gradient':
-            self.matrix.set_gradient(self.mouse_x, self.mouse_y, gradient_type='Nutrient')
+            self.matrix.set_gradient(
+                self.mouse_x, self.mouse_y, gradient_type='Nutrient')
         elif self.tool == 'Add_Toxin':
-            self.matrix.set_gradient(self.mouse_x, self.mouse_y, gradient_type='Toxin')
+            self.matrix.set_gradient(
+                self.mouse_x, self.mouse_y, gradient_type='Toxin')
         elif self.tool == 'Add_Algae':
-            self.matrix.add_creature('Algae', self.mouse_x, self.mouse_y)
+            self.matrix.add_creature(
+                'Algae', self.mouse_x, self.mouse_y)
         elif self.tool == 'Add_Bacterium':
-            self.matrix.add_creature('Bacterium', self.mouse_x, self.mouse_y)
+            self.matrix.add_creature(
+                'Bacterium', self.mouse_x, self.mouse_y)
         elif self.tool == 'Add_Paramecium':
-            self.matrix.add_creature('Paramecium', self.mouse_x, self.mouse_y)
+            self.matrix.add_creature(
+                'Paramecium', self.mouse_x, self.mouse_y)
         elif self.tool == 'Add_Amoeba':
-            self.matrix.add_creature('Amoeba', self.mouse_x, self.mouse_y)
+            self.matrix.add_creature(
+                'Amoeba', self.mouse_x, self.mouse_y)
         elif self.tool == 'Add_Ciliate':
-            self.matrix.add_creature('Ciliate', self.mouse_x, self.mouse_y)
+            self.matrix.add_creature(
+                'Ciliate', self.mouse_x, self.mouse_y)
         elif self.tool == 'Track':
-            bug_tag = self.matrix.bug_track_set(self.mouse_x, self.mouse_y, follow=True)
+            bug_tag = self.matrix.bug_track_set(
+                self.mouse_x, self.mouse_y, follow=True)
             self.panel.info_active(True)
             self.panel.initialize = False
             self.tool_activated = False
         elif self.tool == 'Tag':
-            bug_tag = self.matrix.bug_track_set(self.mouse_x, self.mouse_y, follow=False)
+            bug_tag = self.matrix.bug_track_set(
+                self.mouse_x, self.mouse_y, follow=False)
             self.panel.info_active(True)
             self.panel.initialize = False
             self.tool_activated = False
@@ -118,12 +133,14 @@ class Control(object):
     def check_events(self):
         "Monitor keyboard input"
         for event in pygame.event.get():
-            if event.type == pygame.MOUSEBUTTONDOWN and not self.panel_displayed:
+            if (event.type == pygame.MOUSEBUTTONDOWN and
+                    not self.panel_displayed):
                 mousex, mousey = event.pos
                 if event.button == 1 and not self.matrix.zoom_set:
                     if not pygame.key.get_mods() & pygame.KMOD_SHIFT:
                         if self.compass_display:
-                            if self.compass_rose_bud.collidepoint(mousex,mousey):
+                            if self.compass_rose_bud.collidepoint(mousex,
+                                                                  mousey):
                                 self.panel.set_moveable('Fixed')
                                 self.panel.set_panel_display(True)
                         else:
@@ -133,7 +150,9 @@ class Control(object):
                         self.matrix.species_evolve_set(mousex, mousey)
                 elif event.button == 2:
                     if not self.matrix.zoom_set:
-                        if not self.matrix.bug_follow and not self.matrix.scroll_field['x'] and not self.matrix.scroll_field['y']:
+                        if (not self.matrix.bug_follow and
+                                not self.matrix.scroll_field['x'] and
+                                not self.matrix.scroll_field['y']):
                             self.matrix.zoom_activate(True)
                     else:
                         self.matrix.zoom_activate(False)
@@ -142,20 +161,26 @@ class Control(object):
                         self.mouse_x, self.mouse_y = event.pos
                         mod = pygame.key.get_mods()
                         if not mod:
-                            bug_tag = self.matrix.bug_track_set(self.mouse_x, self.mouse_y, follow=True)
+                            bug_tag = self.matrix.bug_track_set(
+                                self.mouse_x, self.mouse_y, follow=True)
                             self.panel.info_active(True)
                             self.panel.initialize = False
-                        elif (mod & pygame.KMOD_CTRL) and (mod & pygame.KMOD_SHIFT):
+                        elif ((mod & pygame.KMOD_CTRL) and
+                              (mod & pygame.KMOD_SHIFT)):
                             bug_tag = False
-                            self.matrix.bug_remove(self.mouse_x, self.mouse_y)
+                            self.matrix.bug_remove(self.mouse_x,
+                                                   self.mouse_y)
                         elif mod & pygame.KMOD_SHIFT:
-                            bug_tag = self.matrix.bug_track_set(self.mouse_x, self.mouse_y, follow=False)
+                            bug_tag = self.matrix.bug_track_set(
+                                self.mouse_x, self.mouse_y,
+                                follow=False)
                             self.panel.info_active(True)
                             self.panel.initialize = False
                         self.panel.bug_tag = None
                 elif event.button == 4:
                     if self.matrix.zoom_set:
-                        self.matrix.zoom_activate(power=1, zoom_reset=False)
+                        self.matrix.zoom_activate(
+                            power=1, zoom_reset=False)
                     else:
                         self.matrix.zoom_activate(True)
                 elif event.button == 5:
@@ -170,30 +195,42 @@ class Control(object):
                 if not self.matrix.bug_follow and not self.scroll:
                     mousex, mousey = event.pos
                     if self.compass_use and not self.matrix.zoom_set:
-                        if self.compass_rose.collidepoint(mousex,mousey):
+                        if self.compass_rose.collidepoint(mousex,
+                                                          mousey):
                             self.compass_display = True
                         else:
                             self.compass_display = False
-                    if self.compass_display and not self.scroll_edge and not self.matrix.zoom_set:
-                        if self.dir['n'].collidepoint(mousex,mousey) or self.dir['nw'].collidepoint(mousex,mousey) or self.dir['ne'].collidepoint(mousex,mousey):
+                    if (self.compass_display and
+                            not self.scroll_edge and
+                            not self.matrix.zoom_set):
+                        if (self.dir['n'].collidepoint(mousex,mousey) or
+                            self.dir['nw'].collidepoint(mousex,mousey) or
+                            self.dir['ne'].collidepoint(mousex,mousey)):
                             self.matrix.set_scroll('north', 5)
                             self.scroll_y = True
-                        elif self.dir['s'].collidepoint(mousex,mousey) or self.dir['sw'].collidepoint(mousex,mousey) or self.dir['se'].collidepoint(mousex,mousey):
+                        elif (self.dir['s'].collidepoint(mousex,mousey) or
+                              self.dir['sw'].collidepoint(mousex,mousey) or
+                              self.dir['se'].collidepoint(mousex,mousey)):
                             self.matrix.set_scroll('south', 5)
                             self.scroll_y = True
                         else:
                             self.matrix.set_scroll('y', 0)
                             self.scroll_y = False
-                        if self.dir['w'].collidepoint(mousex,mousey) or self.dir['nw'].collidepoint(mousex,mousey) or self.dir['sw'].collidepoint(mousex,mousey):
+                        if (self.dir['w'].collidepoint(mousex,mousey) or
+                            self.dir['nw'].collidepoint(mousex,mousey) or
+                            self.dir['sw'].collidepoint(mousex,mousey)):
                             self.matrix.set_scroll('west', 5)
                             self.scroll_x = True
-                        elif self.dir['e'].collidepoint(mousex,mousey) or self.dir['ne'].collidepoint(mousex,mousey) or self.dir['se'].collidepoint(mousex,mousey):
+                        elif (self.dir['e'].collidepoint(mousex,mousey) or
+                              self.dir['ne'].collidepoint(mousex,mousey) or
+                              self.dir['se'].collidepoint(mousex,mousey)):
                             self.matrix.set_scroll('east', 5)
                             self.scroll_x = True
                         else:
                             self.matrix.set_scroll('x', 0)
                             self.scroll_x = False
-                        if self.compass_rose_bud.collidepoint(mousex,mousey):
+                        if self.compass_rose_bud.collidepoint(mousex,
+                                                              mousey):
                             self.matrix.set_scroll('y', 0)
                             self.matrix.set_scroll('x', 0)
                             self.scroll_y = False
@@ -279,7 +316,8 @@ class Control(object):
                     else:
                         self.scroll_edge = True
                     self.matrix.set_screen_update()
-                elif event.key in [pygame.K_UP, pygame.K_DOWN, pygame.K_LEFT, pygame.K_RIGHT]:
+                elif event.key in [pygame.K_UP, pygame.K_DOWN,
+                                   pygame.K_LEFT, pygame.K_RIGHT]:
                     if not self.scroll_x and not self.scroll_y:
                         if not self.scroll:
                             if self.matrix.zoom_set:
@@ -311,12 +349,14 @@ class Control(object):
                     self.matrix.bug_track_remove()
                     self.matrix.zoom_activate(False)
             elif event.type == pygame.KEYUP:
-                if event.key in [pygame.K_UP, pygame.K_DOWN, pygame.K_LEFT, pygame.K_RIGHT]:
+                if event.key in [pygame.K_UP, pygame.K_DOWN,
+                                 pygame.K_LEFT, pygame.K_RIGHT]:
                     direction = self.direction[event.key]
                     self.matrix.set_scroll(direction, 0)
                     self.scroll = False
             elif event.type == pygame.USEREVENT:
-                if ( self.scroll_x or self.scroll_y ) and not pygame.mouse.get_focused():
+                if ((self.scroll_x or self.scroll_y) and
+                        not pygame.mouse.get_focused()):
                     pygame.time.set_timer(pygame.USEREVENT,0)
                     self.matrix.set_scroll('x', 0)
                     self.matrix.set_scroll('y', 0)
@@ -325,8 +365,9 @@ class Control(object):
                 self.quit = True
 
     def compass(self):
-        def fold(point,step,center=self.compass_rose_bud.center):
-            point = ( int(point[0]+(center[0]-point[0])*step),int(point[1]+(center[1]-point[1])*step) )
+        def fold(point, step, center=self.compass_rose_bud.center):
+            point = (int(point[0] + (center[0]-point[0]) * step),
+                     int(point[1] + (center[1]-point[1]) * step))
             return point
         if self.compass_use and not self.compass_folding:
             compass1 = self.trace1
@@ -349,9 +390,9 @@ class Control(object):
             compass1 = self.trace1[:]
             compass2 = self.trace2[:]
             for point,value in enumerate(self.trace1):
-                compass1[point] = fold(value,step)
+                compass1[point] = fold(value, step)
             for point,value in enumerate(self.trace2):
-                compass2[point] = fold(value,step)
+                compass2[point] = fold(value, step)
         else:
             return False
         if self.compass_display:
@@ -360,8 +401,10 @@ class Control(object):
         else:
             color1 = 15,30,50
             color2 = 10,20,30
-        compass_axis1 = pygame.draw.aalines(self.matrix.screen,color1,True,compass1,0)
-        compass_axis2 = pygame.draw.aalines(self.matrix.screen,color2,True,compass2,0)
+        compass_axis1 = pygame.draw.aalines(
+            self.matrix.screen, color1, True, compass1, 0)
+        compass_axis2 = pygame.draw.aalines(
+            self.matrix.screen, color2, True, compass2, 0)
         self.matrix.update_list.append(compass_axis1)
         self.matrix.update_list.append(compass_axis2)
         if update:
@@ -372,7 +415,8 @@ class Control(object):
         while self.pause:
             for event in pygame.event.get():
                 if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_TAB or event.key == pygame.K_ESCAPE:
+                    if (event.key == pygame.K_TAB or
+                            event.key == pygame.K_ESCAPE):
                         self.pause = False
                 elif event.type == pygame.QUIT:
                     pygame.quit()

@@ -9,8 +9,8 @@ import os
 import math
 
 
-def load_image(file_name, frames=1, path='data', colorkey=None, errorhandle=True):
-    #Modified from PygameChimpTutorial
+def load_image(file_name, frames=1, path='data',
+               colorkey=None, errorhandle=True):
     full_name = os.path.join(path, file_name)
     try:
         if frames == 1:
@@ -22,14 +22,15 @@ def load_image(file_name, frames=1, path='data', colorkey=None, errorhandle=True
             width = width // frames
             for frame in range(frames):
                 frame_num = width * frame
-                image_frame = image.subsurface((frame_num,0), (width,height)).copy()
+                image_frame = image.subsurface(
+                    (frame_num,0), (width,height)).copy()
                 images.append(image_frame)
             return images
     except pygame.error:
         if errorhandle:
             raise
         else:
-            print(message)
+            print("Error loading image %s" % file_name)
             return None
     if image.get_alpha():
         image = image.convert_alpha()

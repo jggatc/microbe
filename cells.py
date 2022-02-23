@@ -28,8 +28,17 @@ class Evolve(object):
     Manages the evolutional process.
     """
 
-    def genetics(self, inherit=None, mutation_rate=0.5, genome=None, alleles=None):
-        """Set genetics of organism. Parameters: inherit - contain copy of self.gene, otherwise, organism genetic makeup set randomly from possibilities in alleles; mutation_rate - rate at which heritable genes are mutated; genome - number of genes; alleles - ranges from which gene settings will be chosen."""
+    def genetics(self, inherit=None, mutation_rate=0.5,
+                 genome=None, alleles=None):
+        """
+        Set genetics of organism.
+        Arguments:
+        inherit - contain copy of self.gene, otherwise, organism
+        genetic makeup set randomly from possibilities in alleles;
+        mutation_rate - rate at which heritable genes are mutated;
+        genome - number of genes;
+        alleles - ranges from which gene settings will be chosen.
+        """
         if self.matrix.evolution and genome:     #evolve trait parameters
             self.inherit = inherit
             gene = {}
@@ -39,13 +48,14 @@ class Evolve(object):
                     gene[genex] = random.randrange(*alleles[genex])
                 if mutation:
                     mutant_gene = random.choice((gene.keys()))  #mutate single gene
-                    mutant_trait = { mutant_gene: gene[mutant_gene] }
+                    mutant_trait = {mutant_gene: gene[mutant_gene]}
             if inherit:
                 gene = inherit  #clonal division
                 if random.random() > 0.9:   #crossover
                     group = self.matrix.species_group[self.species]
                     gene_xo = random.choice(group.sprites()).gene
-                    gene_select = random.sample(range(1,len(gene)+1), len(gene)//2)
+                    gene_select = random.sample(range(1,len(gene)+1),
+                                                len(gene)//2)
                     for gen in gene_select:
                         gene[gen] = gene_xo[gen]
                 if mutation:    #clonal division with single mutation
@@ -53,7 +63,12 @@ class Evolve(object):
             return gene
 
     def evolution(self, cycle=500, division_threshold=18):    #selection
-        """Evolutionary selection. Parameters: cycle - rate of cell update; division_threshold - energy required for division."""
+        """
+        Evolutionary selection.
+        Arguments:
+        cycle - rate of cell update;
+        division_threshold - energy required for division.
+        """
         if self.life:   #prosper or perish
             self.exist += 1
             self.ingest -= 1.0/cycle  #energy expenditure
@@ -63,15 +78,18 @@ class Evolve(object):
                 if self.fitness >= 100:   #replicate when reserves sufficient
                     self.ingest = division_threshold / 4
                     if self.species.count < self.species.maximum:
-                        self.matrix.add_creature(self.species, self.x, self.y, clone=True, identity=self.identity, inherit=self.gene.copy())     #give copy of self.gene, so that it's not modified
+                        self.matrix.add_creature(
+                            self.species, self.x, self.y, clone=True,
+                            identity=self.identity,
+                            inherit=self.gene.copy())     #give copy of self.gene, so that it's not modified
                 elif self.fitness <= 0:   #possible decrease when reserves depleted
-                    if random.random() > ( 0.9 - abs(self.fitness*0.1) ):
+                    if random.random() > (0.9 - abs(self.fitness*0.1)):
                         self.life = False
                 if self.species.count < self.species.minimum:  #fresh supply to gene pool, and stop extinction
                     self.matrix.add_creature(self.species)
 
 
-class Cell( pygame.sprite.Sprite, Evolve ):
+class Cell(pygame.sprite.Sprite, Evolve):
     """
     Cell class is the base class of cells.
     """
@@ -86,7 +104,9 @@ class Cell( pygame.sprite.Sprite, Evolve ):
     alleles = {}
     gene_info = {}
 
-    def __init__(self, matrix, x, y, cell_image=None, frames=1, identity=None, inherit=None, mutation_rate=0.5, limit=(10,100)):      #limit=(min,max)/1500x1500
+    def __init__(self, matrix, x, y, cell_image=None, frames=1,
+                 identity=None, inherit=None, mutation_rate=0.5,
+                 limit=(10,100)):      #limit=(min,max)/1500x1500
         pygame.sprite.Sprite.__init__(self)
         self.species = self.__class__
         self.matrix = matrix
@@ -123,11 +143,12 @@ class Cell( pygame.sprite.Sprite, Evolve ):
                 image_width = width // frames
                 for frame in range(frames):
                     frame_num = image_width * frame
-                    image_frame = image.subsurface((frame_num,0), (image_width,height)).copy()
+                    image_frame = image.subsurface(
+                        (frame_num,0), (image_width,height)).copy()
                     self.species.image.append(image_frame)
             size = (self.matrix.x*self.matrix.y) / (1500*1500)
-            self.species.minimum = int( math.ceil(limit[0]*size) )
-            self.species.maximum = int( math.ceil(limit[1]*size) )
+            self.species.minimum = int(math.ceil(limit[0] * size))
+            self.species.maximum = int(math.ceil(limit[1] * size))
         self.phenotype(self.species, cell_image, frames)     #default image
         if identity:
             self.identity = identity
@@ -143,7 +164,8 @@ class Cell( pygame.sprite.Sprite, Evolve ):
                 self.label_size = 10
         except:
             self.label_size = 10
-        self.print_tag = interphase.Text(self.matrix.screen, font_size=self.label_size)
+        self.print_tag = interphase.Text(self.matrix.screen,
+                                         font_size=self.label_size)
         self.growth_rate = 1.0
 
     def set_trait(self, gene):
@@ -164,7 +186,8 @@ class Cell( pygame.sprite.Sprite, Evolve ):
         if self.matrix.evolution and self.species.evolving:
             genome = len(gene)
             alleles = self.species.alleles.copy()
-            gene = self.genetics(inherit,mutation_rate,genome,alleles)
+            gene = self.genetics(inherit, mutation_rate,
+                                 genome, alleles)
         trait = self.set_trait(gene)
         return gene, trait
 
@@ -190,11 +213,14 @@ class Cell( pygame.sprite.Sprite, Evolve ):
         if display:
             if not self.rotate_image:
                 if not self.id_tag:
-                    self.id_tag = self.print_tag.font[self.label_size].render(str(self.identity), True, (255,0,0))
+                    self.id_tag = self.print_tag.font[self.label_size].render(
+                        str(self.identity), True, (255,0,0))
                 imagex,imagey = self.image.get_rect().center
                 self.image.blit(self.id_tag, (imagex-3,imagey-3) )
         else:
-            self.image = pygame.transform.rotozoom(self.species.image[self.image_frame], -self.direction, 1.0)
+            self.image = pygame.transform.rotozoom(
+                self.species.image[self.image_frame],
+                -self.direction, 1.0)
 
     def life_check(self):
         if self.life:
@@ -217,7 +243,8 @@ class Cell( pygame.sprite.Sprite, Evolve ):
         pass
 
     def locate(self):
-        self.x, self.y = self.locate_coordinate(self.velocity, self.direction)
+        self.x, self.y = self.locate_coordinate(self.velocity,
+                                                self.direction)
         self.check_interact()   #check if pass edge, adjust position accordingly
         if self.matrix.creature_inview(self):   #image update if inview
             if self.image_multiframe:
@@ -229,7 +256,9 @@ class Cell( pygame.sprite.Sprite, Evolve ):
                         self.image_frame = 0
                 self.rotate_image = True
             if self.rotate_image:   #rotozoom better quality than rotate
-                self.image = pygame.transform.rotozoom(self.species.image[self.image_frame], -self.direction, 1.0)
+                self.image = pygame.transform.rotozoom(
+                    self.species.image[self.image_frame],
+                    -self.direction, 1.0)
                 self.rotate_image = False
         self.rect = self.image.get_rect(center=(self.x,self.y))
 
@@ -241,7 +270,8 @@ class Cell( pygame.sprite.Sprite, Evolve ):
         right_edge = self.matrix.x-1 - margin_x
         top_edge = 0 + margin_y
         bottom_edge = self.matrix.y-1 - margin_y
-        if self.x < left_edge or self.x > right_edge or self.y < top_edge or self.y > bottom_edge:
+        if (self.x < left_edge or self.x > right_edge or
+            self.y < top_edge or self.y > bottom_edge):
             if self.x < left_edge:
                 self.x = left_edge
             elif self.x > right_edge:
@@ -256,8 +286,12 @@ class Cell( pygame.sprite.Sprite, Evolve ):
             return False
 
     def locate_coordinate(self, step, direction, change=True):
-        """Calculates coordinate following step in a given direction from starting position self.pos_x, self.pos_y.
-           If change is True changes self.pos_x/self.pos_y, otherwise just return calculated position."""
+        """
+        Calculates coordinate following step in a given direction
+        from starting position self.pos_x, self.pos_y. If change
+        is True changes self.pos_x/self.pos_y, otherwise just
+        return calculated position.
+        """
         x = self.pos_x
         y = self.pos_y
         x += +step*sin_table[direction]     # x += +step*math.sin(direction*math.pi/180)
@@ -311,8 +345,10 @@ class Algae(Cell):
     gene = {}
     alleles = {}
 
-    def __init__(self, matrix, x, y, cell_image='algae.png', frames=1, identity=None, inherit=None, mutation_rate=0.5):
-        Cell.__init__(self, matrix, x, y, cell_image, frames, identity, inherit, mutation_rate)
+    def __init__(self, matrix, x, y, cell_image='algae.png', frames=1,
+                 identity=None, inherit=None, mutation_rate=0.5):
+        Cell.__init__(self, matrix, x, y, cell_image, frames,
+                      identity, inherit, mutation_rate)
 
     def display_tag(self, display=True):
         pass
@@ -327,12 +363,18 @@ class Bacterium(Cell):
     count = 0
     id = 0
     evolving = False
-    gene = { 1:1, 2:11 }
-    alleles = { 1:(0,2), 2:(2,12) }
-    gene_info = { 1:'Sense[0]', 2:'Sense[1]' }
+    gene = {1: 1,
+            2: 11}
+    alleles = {1: (0, 2),
+               2: (2, 12)}
+    gene_info = {1: 'Sense[0]',
+                 2: 'Sense[1]'}
 
-    def __init__(self, matrix, x, y, cell_image='bacterium.png', frames=1, identity=None, inherit=None, mutation_rate=0.5, limit=(90,500)):
-        Cell.__init__(self, matrix, x, y, cell_image, frames, identity, inherit, mutation_rate, limit)
+    def __init__(self, matrix, x, y, cell_image='bacterium.png', frames=1,
+                 identity=None, inherit=None, mutation_rate=0.5,
+                 limit=(90,500)):
+        Cell.__init__(self, matrix, x, y, cell_image, frames,
+                      identity, inherit, mutation_rate, limit)
         self.sense_previous = 0
         self.sense_previous_toxin = 0
         self.sense_bacteria = 1 #sense bacterium trace, to gauge bacteria density
@@ -344,7 +386,7 @@ class Bacterium(Cell):
         self.velocity = 2
 
     def set_trait(self, gene):
-        trait = { 'sense': lambda: random.randrange(gene[1],gene[2]) }
+        trait = {'sense': lambda: random.randrange(gene[1],gene[2])}
         return trait
 
     def evolve(self):
@@ -361,19 +403,25 @@ class Bacterium(Cell):
                     self.sensing = True
                     attract = 1
             if substance is 'nutrient':
-                if self.matrix.nutrient[self.x,self.y] > self.sense_previous:
-                    self.sense_previous = self.matrix.nutrient[self.x,self.y]
+                if (self.matrix.nutrient[self.x,self.y] >
+                        self.sense_previous):
+                    self.sense_previous = self.matrix.nutrient[self.x,
+                                                               self.y]
                     return self.trait['sense']() * 0.02 * attract      #evolve = random.randrange(1,11)
                 else:
-                    self.sense_previous = self.matrix.nutrient[self.x,self.y]
+                    self.sense_previous = self.matrix.nutrient[self.x,
+                                                               self.y]
                     return 0.0
             elif substance is 'toxin':
                 if self.matrix.toxin_presense:
-                    if self.matrix.toxin[self.x,self.y] < self.sense_previous_toxin:
-                        self.sense_previous_toxin = self.matrix.toxin[self.x,self.y]
+                    if (self.matrix.toxin[self.x,self.y] <
+                            self.sense_previous_toxin):
+                        self.sense_previous_toxin = self.matrix.toxin[self.x,
+                                                                      self.y]
                         return (random.randrange(1,11) * 0.02)
                     else:
-                        self.sense_previous_toxin = self.matrix.toxin[self.x,self.y]
+                        self.sense_previous_toxin = self.matrix.toxin[self.x,
+                                                                      self.y]
                         return 0.0
                 else:
                     return 0.0
@@ -381,7 +429,11 @@ class Bacterium(Cell):
             return 0.0
 
     def motor_check(self):
-        if random.random() > ( (0.1*self.velocity) - (self.sense('nutrient')*self.velocity) - (self.sense('toxin')*self.velocity) ):    #need adjustment with velocity
+        if (random.random() > ((0.1*self.velocity)
+                                - (self.sense('nutrient')
+                                    * self.velocity)
+                                - (self.sense('toxin')
+                                    * self.velocity))):    #need adjustment with velocity
             motive = True   #1:forward 0:tumble
         else:
             motive = False
@@ -396,8 +448,10 @@ class Bacterium(Cell):
                 self.rotate_image = True
         else:
             if random.random() > 0.2:
-                reverse_direction = self.direction_set( self.direction + 180 )
-                direction = random.choice((self.direction,reverse_direction))
+                reverse_direction = self.direction_set(
+                    self.direction + 180)
+                direction = random.choice(
+                    (self.direction,reverse_direction))
             else:
                 direction = 0
         if direction:
@@ -411,7 +465,10 @@ class Bacterium(Cell):
             pass
 
     def bacteria_detect(self):
-        "Bacterium detection of bacteria trace, to judge local bacterium density so as to avoid overcrowding"
+        """
+        Bacterium detection of bacteria trace, to judge local
+        bacterium density so as to avoid overcrowding.
+        """
         try:
             if self.matrix.trace[self.x,self.y] > 150:
                 if self.sense_bacteria < 100:
@@ -431,7 +488,8 @@ class Bacterium(Cell):
         self.growth_rate = 1.0 / math.sqrt(self.sense_bacteria)  #high density causes reduce growth rate
 
     def growth(self):
-        if (not self.fission) and (self.species.count < self.species.maximum):
+        if ((not self.fission) and
+                (self.species.count < self.species.maximum)):
             try:
                 self.nutrient = self.matrix.nutrient[self.x,self.y] * 0.01
                 if self.nutrient < self.max_ingest:
@@ -450,7 +508,9 @@ class Bacterium(Cell):
             except IndexError:
                 return
         if self.cell_division():
-            self.matrix.add_creature(self.species, self.x, self.y, clone=True, inherit=self.gene.copy())
+            self.matrix.add_creature(
+                self.species, self.x, self.y, clone=True,
+                inherit=self.gene.copy())
             self.velocity = 2
             if random.random() < 0.9:
                 self.sensing = True
@@ -474,25 +534,61 @@ class Paramecium(Cell):
     count = 0
     id = 0
     evolving = False
-    gene = { 1:3, 2:2, 3:0, 4:1, 5:0, 6:1, 7:50, 8:100, 9:-2, 10:3, 11:45, 12:90 }
-    alleles = { 1:(2,6), 2:(2,6), 3:(0,2), 4:(2,6), 5:(0,2), 6:(2,6), 7:(25,51), 8:(75,301), 9:(-6,0), 10:(1,7), 11:(25,51), 12:(75,126) }
-    gene_info = { 1:'Velocity Sense Forward', 2:'Velocity Sense Reverse', 3:'Distance Sense Forward[0]', 4:'Distance Sense Forward[1]', 5:'Distance Sense Reverse[0]', 6:'Distance Sense Reverse[1]', 7:'Distance Range[0]', 8:'Distance Range[1]', 9:'Direction Change Rate[0]', 10:'Direction Change Rate[1]', 11:'Direction Change[0]', 12:'Direction Change[1]' }
+    gene = { 1: 3,
+             2: 2,
+             3: 0,
+             4: 1,
+             5: 0,
+             6: 1,
+             7: 50,
+             8: 100,
+             9: -2,
+            10: 3,
+            11: 45,
+            12: 90}
+    alleles = { 1: (2, 6),
+                2: (2, 6),
+                3: (0, 2),
+                4: (2, 6),
+                5: (0, 2),
+                6: (2, 6),
+                7: (25, 51),
+                8: (75, 301),
+                9: (-6, 0),
+               10: (1, 7),
+               11: (25, 51),
+               12: (75, 126)}
+    gene_info = { 1: 'Velocity Sense Forward',
+                  2: 'Velocity Sense Reverse',
+                  3: 'Distance Sense Forward[0]',
+                  4: 'Distance Sense Forward[1]',
+                  5: 'Distance Sense Reverse[0]',
+                  6: 'Distance Sense Reverse[1]',
+                  7: 'Distance Range[0]',
+                  8: 'Distance Range[1]',
+                  9: 'Direction Change Rate[0]',
+                 10: 'Direction Change Rate[1]',
+                 11: 'Direction Change[0]',
+                 12: 'Direction Change[1]'}
 
-    def __init__(self, matrix, x, y, cell_image='paramecium.png', frames=2, identity=None, inherit=None, mutation_rate=0.5, limit=(9,50)):
-        Cell.__init__(self, matrix, x, y, cell_image, frames, identity, inherit, mutation_rate, limit)
+    def __init__(self, matrix, x, y, cell_image='paramecium.png', frames=2,
+                 identity=None, inherit=None, mutation_rate=0.5,
+                 limit=(9,50)):
+        Cell.__init__(self, matrix, x, y, cell_image, frames,
+                      identity, inherit, mutation_rate, limit)
         self.velocity = self.trait['vel_sense_f']
-        self.prey_success = self.image.get_size()[0]//(self.velocity*2)  #prey capture success
+        self.prey_success = self.image.get_size()[0] // (self.velocity*2)  #prey capture success
         self.ingest = 4
 
     def set_trait(self, gene):
         #gene = 1:vel_sense_f, 2:vel_sense_r, 3:dist_sense_f-0, 4:dist_sense_f-1, 5:dist_sense_r-0, 6:dist_sense_r-1, 7:dist-0, 8:dist-1, 9:dist_i-0, 10:dist_i-1, 11:dir_f-0, 12:dir_f-1
-        trait = { 'vel_sense_f': gene[1], \
-                  'vel_sense_r': gene[2],  \
-                  'dist_sense_f': lambda: ( 1 * random.choice((gene[3],gene[4])) ), \
-                  'dist_sense_r': lambda: ( 3 * random.choice((gene[5],gene[6])) ), \
-                  'dist': lambda: random.randrange(gene[7],gene[8]), \
-                  'dir_i': lambda: random.randrange(gene[9],gene[10]), \
-                  'dir_f': lambda: random.randrange(gene[11],gene[12]) }
+        trait = {'vel_sense_f': gene[1],
+                 'vel_sense_r': gene[2],
+                 'dist_sense_f': lambda: (1 * random.choice((gene[3],gene[4]))),
+                 'dist_sense_r': lambda: (3 * random.choice((gene[5],gene[6]))),
+                 'dist': lambda: random.randrange(gene[7],gene[8]),
+                 'dir_i': lambda: random.randrange(gene[9],gene[10]),
+                 'dir_f': lambda: random.randrange(gene[11],gene[12])}
         return trait
 
     def evolve(self):
@@ -501,46 +597,61 @@ class Paramecium(Cell):
     def sense (self):
         try:
             sense = 0
-            leading_edge_x, leading_edge_y = self.locate_coordinate(25,self.direction,False)  #watch IndexError?
+            leading_edge_x, leading_edge_y = (
+                self.locate_coordinate(25,self.direction,False))  #watch IndexError?
             if self.matrix.toxin_presense:
-                if self.matrix.toxin[leading_edge_x,leading_edge_y] > self.matrix.toxin[self.x,self.y]:
+                if (self.matrix.toxin[leading_edge_x,leading_edge_y] >
+                        self.matrix.toxin[self.x,self.y]):
                     sense = 3
                     return sense
-            if (self.matrix.nutrient[leading_edge_x,leading_edge_y] > self.matrix.nutrient[self.x,self.y]) or (self.matrix.trace[leading_edge_x,leading_edge_y] > self.matrix.trace[self.x,self.y]):
+            if ((self.matrix.nutrient[leading_edge_x,leading_edge_y] >
+                    self.matrix.nutrient[self.x,self.y]) or
+                (self.matrix.trace[leading_edge_x,leading_edge_y] >
+                     self.matrix.trace[self.x,self.y])):
                 sense = 1
             else:
-                reverse_direction = self.direction_set( self.direction + 180 )
-                back_edge_x, back_edge_y = self.locate_coordinate(25,reverse_direction,False)
-                if (self.matrix.nutrient[back_edge_x,back_edge_y] > self.matrix.nutrient[self.x,self.y]) or (self.matrix.trace[back_edge_x,back_edge_y] > self.matrix.trace[self.x,self.y]):
+                reverse_direction = self.direction_set(self.direction + 180)
+                back_edge_x, back_edge_y = self.locate_coordinate(
+                    25,reverse_direction,False)
+                if ((self.matrix.nutrient[back_edge_x,back_edge_y] >
+                        self.matrix.nutrient[self.x,self.y]) or
+                    (self.matrix.trace[back_edge_x,back_edge_y] >
+                        self.matrix.trace[self.x,self.y])):
                         sense = 2
         except IndexError:
             sense = 0    #not sense if past edge
         return sense
 
     def check_interact_members(self):      #interact with other paramecium
-        paramecium_bump = pygame.sprite.spritecollide(self, self.matrix.cells['paramecium'], False)  #paramecium avoidance
+        paramecium_bump = pygame.sprite.spritecollide(
+            self, self.matrix.cells['paramecium'], False)  #paramecium avoidance
         if len(paramecium_bump) > 1:    #bumping more than self
             for bump in paramecium_bump:    #if not reverse?
                 if bump == self:
                     continue
-                elif (abs(bump.rect.centerx-self.rect.centerx) < 25 and abs(bump.rect.centery-self.rect.centery) < 25):
+                elif (abs(bump.rect.centerx-self.rect.centerx) < 25 and
+                      abs(bump.rect.centery-self.rect.centery) < 25):
                     if not self.interact or (random.random() > 0.99):
                         self.step = 0   #?
                         self.interact = random.randrange(-3,4)
         else:
             self.interact = 0   #not bumping
         if self.interact:
-            self.direction = self.direction_set( self.direction + self.interact )
+            self.direction = self.direction_set(
+                self.direction + self.interact)
             self.rotate_image = True
 
     def check_interact(self):
         self.check_interact_members()
-        if self.check_edge(self.image.get_width()//2,self.image.get_height()//2) or self.check_bump_map((self.x,self.y)):
+        if (self.check_edge(self.image.get_width()//2,
+            self.image.get_height()//2) or
+                self.check_bump_map((self.x,self.y))):
             self.motion_reverse()
 
     def check_bump_map(self, position):
         try:
-            if self.matrix.nutrient[position] > 10000 and random.random() > 0.9:   #check if contacting nutrient peak
+            if (self.matrix.nutrient[position] > 10000 and
+                    random.random() > 0.9):   #check if contacting nutrient peak
                 nutrient_bump = True    #increase bump chance?
             else:
                 nutrient_bump = False
@@ -586,16 +697,22 @@ class Paramecium(Cell):
                 self.velocity = random.choice((2,2))
         if self.direction_adj_f > 0:
             self.rotate_image = True
-            self.direction = self.direction_set( self.direction + self.direction_adj_i )
+            self.direction = self.direction_set(
+                self.direction + self.direction_adj_i)
             self.direction_adj_f -= self.direction_adj_i
         self.distance -= 1
 
     def growth(self):
         prey_collide = []
-        prey_collide.extend( pygame.sprite.spritecollide(self, self.matrix.cells['bacterium'], False) )
-        prey_collide.extend( pygame.sprite.spritecollide(self, self.matrix.cells['algae'], False) )
+        prey_collide.extend(pygame.sprite.spritecollide(
+            self, self.matrix.cells['bacterium'], False))
+        prey_collide.extend(pygame.sprite.spritecollide(
+            self, self.matrix.cells['algae'], False))
         for prey in prey_collide:
-            if abs(prey.rect.centerx - self.rect.centerx) < self.prey_success and abs(prey.rect.centery - self.rect.centery) < self.prey_success:
+            if (abs(prey.rect.centerx - self.rect.centerx) <
+                    self.prey_success and
+                abs(prey.rect.centery - self.rect.centery) <
+                    self.prey_success):
                 self.ingest += 1    #evolve
                 prey.life = False
 
@@ -613,12 +730,37 @@ class Amoeba(Cell):
     count = 0
     id = 0
     evolving = False
-    gene = { 1:0, 2:2, 3:0, 4:2, 5:100, 6:200, 7:-1, 8:2 }
-    alleles = { 1:(0,2), 2:(2,6), 3:(0,2), 4:(2,6), 5:(10,101), 6:(150,301), 7:(-5,0), 8:(1,6) }
-    gene_info = { 1:'Distance Sense Forward[0]', 2:'Distance Sense Forward[1]', 3:'Distance Sense Reverse[0]', 4:'Distance Sense Reverse[1]', 5:'Distance Range[0]', 6:'Distance Range[1]', 7:'Direction Change[0]', 8:'Direction Change[1]' }
+    gene = {1: 0,
+            2: 2,
+            3: 0,
+            4: 2,
+            5: 100,
+            6: 200,
+            7: -1,
+            8: 2}
+    alleles = {1: (0, 2),
+               2: (2, 6),
+               3: (0, 2),
+               4: (2, 6),
+               5: (10, 101),
+               6: (150, 301),
+               7: (-5, 0),
+               8: (1, 6)}
+    gene_info = {1: 'Distance Sense Forward[0]',
+                 2: 'Distance Sense Forward[1]',
+                 3: 'Distance Sense Reverse[0]',
+                 4: 'Distance Sense Reverse[1]',
+                 5: 'Distance Range[0]',
+                 6: 'Distance Range[1]',
+                 7: 'Direction Change[0]',
+                 8: 'Direction Change[1]'}
 
-    def __init__(self, matrix, x, y, cell_image=None, color=1, identity=None, inherit=None, mutation_rate=0.5, limit=(3,25)):
-        Cell.__init__(self, matrix, x, y, identity=identity, inherit=inherit, mutation_rate=mutation_rate, limit=limit)
+    def __init__(self, matrix, x, y, cell_image=None, color=1,
+                 identity=None, inherit=None, mutation_rate=0.5,
+                 limit=(3,25)):
+        Cell.__init__(self, matrix, x, y, identity=identity,
+                      inherit=inherit, mutation_rate=mutation_rate,
+                      limit=limit)
         self.step = 0
         self.step_x = 75    # step location in animate movement
         self.step_y = 200
@@ -634,7 +776,8 @@ class Amoeba(Cell):
             for y in range(10,40,2):
                 self.amoeba[x,y] = self.color
         self.amoebas = numpy.zeros((150,300), numpy.int_)     #amoeba move array with display overlap
-        self.amoebas[self.step_x-25:self.step_x+25,self.step_y-25:self.step_y+25] = self.amoeba
+        self.amoebas[self.step_x-25:self.step_x+25,
+                     self.step_y-25:self.step_y+25] = self.amoeba
         try:
             self.animate = animate.amoeba_animate   #compiled
         except NameError:
@@ -658,10 +801,10 @@ class Amoeba(Cell):
 
     def set_trait(self, gene):
         #gene = 1:dist_sense_f-0, 2:dist_sense_f-1, 3:dist_sense_r-0, 4:dist_sense_r-1, 5:dist-0, 6:dist-1, 7:dir-0, 8:dir-1
-        trait = { 'dist_sense_f': lambda: ( 5 * random.randrange(gene[1],gene[2]) ), \
-                  'dist_sense_r': lambda: ( 5 * random.randrange(gene[3],gene[4]) ), \
-                  'dist': lambda: random.randrange(gene[5],gene[6]), \
-                  'dir': lambda: random.randrange(gene[7],gene[8]) }
+        trait = {'dist_sense_f': lambda: (5 * random.randrange(gene[1],gene[2])),
+                 'dist_sense_r': lambda: (5 * random.randrange(gene[3],gene[4])),
+                 'dist': lambda: random.randrange(gene[5],gene[6]),
+                 'dir': lambda: random.randrange(gene[7],gene[8])}
         return trait
 
     def evolve(self):
@@ -671,19 +814,25 @@ class Amoeba(Cell):
         if display:
             if not self.id_tag:
                 label_size = 10
-                self.id_tag = self.print_tag.font[label_size].render(str(self.identity), True, (255,0,0))
-            imagex,imagey = self.image.get_rect().center
+                self.id_tag = self.print_tag.font[label_size].render(
+                    str(self.identity), True, (255,0,0))
+            imagex, imagey = self.image.get_rect().center
             self.image.blit(self.id_tag, (imagex-3,imagey-3) )
 
     def sense(self):    #Sensing
         try:
             sense = False
-            leading_edge_x, leading_edge_y = self.locate_coordinate(25,self.direction,False)  #watch IndexError?
+            leading_edge_x, leading_edge_y = self.locate_coordinate(
+                25,self.direction,False)  #watch IndexError?
             if self.matrix.toxin_presense:
-                if self.matrix.toxin[leading_edge_x,leading_edge_y] > self.matrix.toxin[self.x,self.y]:
+                if (self.matrix.toxin[leading_edge_x,leading_edge_y] >
+                        self.matrix.toxin[self.x,self.y]):
                     sense = False
                     return sense
-            if self.matrix.nutrient[leading_edge_x,leading_edge_y] > self.matrix.nutrient[self.x,self.y] or self.matrix.trace[leading_edge_x,leading_edge_y] > self.matrix.trace[self.x,self.y]:
+            if (self.matrix.nutrient[leading_edge_x,leading_edge_y] >
+                    self.matrix.nutrient[self.x,self.y] or
+                self.matrix.trace[leading_edge_x,leading_edge_y] >
+                    self.matrix.trace[self.x,self.y]):
                 sense = True
         except IndexError:
             sense = False
@@ -691,17 +840,20 @@ class Amoeba(Cell):
 
     def check_interact_members(self):
         if random.random() > 0.995:
-            amoeba_bump = pygame.sprite.spritecollide(self, self.matrix.cells['amoeba'], False)
+            amoeba_bump = pygame.sprite.spritecollide(
+                self, self.matrix.cells['amoeba'], False)
             if len(amoeba_bump) > 1:    #bumping more than self
                 for bump in amoeba_bump:    #if not reverse?
                     if bump == self:
                         continue
-                    elif (abs(bump.rect.centerx-self.rect.centerx) < 50 and abs(bump.rect.centery-self.rect.centery) < 50):
+                    elif (abs(bump.rect.centerx-self.rect.centerx) < 50 and
+                          abs(bump.rect.centery-self.rect.centery) < 50):
                         self.interact = random.randrange(150,210)
             else:
                 self.interact = 0   #not bumping
             if self.interact:
-                self.direction = self.direction_set( self.direction + self.interact )
+                self.direction = self.direction_set(
+                    self.direction + self.interact)
                 self.interact = 0
                 self.reverse = True
 
@@ -720,18 +872,24 @@ class Amoeba(Cell):
     def motion(self):
         self.step += 1
         if self.step > 12:
-            step_x_pos, step_y_pos = self.locate_coordinate(10, self.direction, change=False)
+            step_x_pos, step_y_pos = self.locate_coordinate(
+                10, self.direction, change=False)
             try:
-                if ( self.matrix.nutrient[step_x_pos, step_y_pos] < 500 or self.matrix.nutrient[self.x,self.y] >= 500 ) and not self.check_edge(35,35):    #turn at nutrient
-                    self.x, self.y = self.locate_coordinate(1, self.direction)
+                if ((self.matrix.nutrient[step_x_pos, step_y_pos] < 500 or
+                     self.matrix.nutrient[self.x,self.y] >= 500) and
+                     not self.check_edge(35,35)):    #turn at nutrient
+                    self.x, self.y = self.locate_coordinate(
+                        1, self.direction)
                     self.step = 0
                     if self.matrix.creature_inview(self):
                         self.step_y -= 1    #only update animate move if onscreen
                 else:
-                    self.direction = self.direction_set( self.direction + random.randrange(90,270) )   #slower turn?
+                    self.direction = self.direction_set(
+                        self.direction + random.randrange(90,270))   #slower turn?
                     self.reverse = True
             except IndexError:
-                self.direction = self.direction_set( self.direction + random.randrange(90,270) )
+                self.direction = self.direction_set(
+                    self.direction + random.randrange(90,270))
                 self.reverse = True
         if self.sense():        #Sensing
             self.distance += self.trait['dist_sense_f']()   #evolve = 5 * random.randrange(0,2)
@@ -740,29 +898,38 @@ class Amoeba(Cell):
         self.distance -= 1
         if self.distance <= 0:
             dir_change = self.trait['dir']()    #evolve = random.randrange(-1,2)
-            self.direction = self.direction_set(self.direction + dir_change)
+            self.direction = self.direction_set(
+                self.direction + dir_change)
             self.distance = self.trait['dist']()    #evolve = random.randrange(100, 200)
 
     def move_animate(self):
         if self.reverse == True:
-            self.amoeba = self.amoebas[self.step_x-25:self.step_x+25,self.step_y-25:self.step_y+25]
+            self.amoeba = self.amoebas[self.step_x-25:self.step_x+25,
+                                       self.step_y-25:self.step_y+25]
             self.amoebas = numpy.zeros((150,300), numpy.int_)
             self.step_y = 200   #place amoeba at beginning of treadmill
             self.amoeba = numpy.fliplr(self.amoeba)
-            self.amoebas[self.step_x-25:self.step_x+25,self.step_y-25:self.step_y+25] = self.amoeba
+            self.amoebas[self.step_x-25:self.step_x+25,
+                         self.step_y-25:self.step_y+25] = self.amoeba
             self.reverse = False
         if self.step_y < 50:    #when amoeba at end of treadmill
-            self.amoeba = self.amoebas[self.step_x-25:self.step_x+25,self.step_y-25:self.step_y+25]
+            self.amoeba = self.amoebas[self.step_x-25:self.step_x+25,
+                                       self.step_y-25:self.step_y+25]
             self.amoebas = numpy.zeros((150,300), numpy.int_)
             self.step_y = 200   #place amoeba at beginning of treadmill
-            self.amoebas[self.step_x-25:self.step_x+25,self.step_y-25:self.step_y+25] = self.amoeba
-        self.amoebas = self.animate(self.amoebas, self.amoebas_indices[self.amoebas_indices_keys[self.amoebas_index]], self.step_x, self.step_y, self.color)
+            self.amoebas[self.step_x-25:self.step_x+25,
+                         self.step_y-25:self.step_y+25] = self.amoeba
+        self.amoebas = self.animate(
+            self.amoebas,
+            self.amoebas_indices[self.amoebas_indices_keys[self.amoebas_index]],
+            self.step_x, self.step_y, self.color)
         self.amoebas_index += 1
         if self.amoebas_index > 99:
             self.amoebas_index = 0
             random.shuffle(self.amoebas_indices_keys)
 
-    def amoeba_animate(self, amoebas, amoebas_indices, step_x, step_y, colr):
+    def amoeba_animate(self, amoebas, amoebas_indices,
+                       step_x, step_y, colr):
         color = colr
         erase = 0
         stepx = step_x - 25
@@ -797,8 +964,12 @@ class Amoeba(Cell):
 
     def update_image(self):
         #update_image
-        pygame.surfarray.blit_array(self.species.screen_amoeba, self.amoebas[self.step_x-25:self.step_x+25,self.step_y-25:self.step_y+25])
-        image = pygame.transform.rotozoom(self.species.screen_amoeba, -self.direction, 1)
+        pygame.surfarray.blit_array(
+            self.species.screen_amoeba,
+            self.amoebas[self.step_x-25:self.step_x+25,
+                         self.step_y-25:self.step_y+25])
+        image = pygame.transform.rotozoom(
+            self.species.screen_amoeba, -self.direction, 1)
         image = image.convert()
         image.set_colorkey((0,0,0), pygame.RLEACCEL)
         rect = image.get_rect(center=(self.x,self.y))   #define rect position when offscreen?
@@ -806,10 +977,15 @@ class Amoeba(Cell):
 
     def growth(self):
         prey_collide = []
-        prey_collide.extend( pygame.sprite.spritecollide(self, self.matrix.cells['bacterium'], False) )
-        prey_collide.extend( pygame.sprite.spritecollide(self, self.matrix.cells['algae'], False) )
+        prey_collide.extend(
+            pygame.sprite.spritecollide(
+                self, self.matrix.cells['bacterium'], False))
+        prey_collide.extend(
+            pygame.sprite.spritecollide(
+                self, self.matrix.cells['algae'], False))
         for prey in prey_collide:
-            if abs(prey.rect.centerx - self.rect.centerx) < 15 and abs(prey.rect.centery - self.rect.centery) < 15:
+            if (abs(prey.rect.centerx - self.rect.centerx) < 15 and
+                abs(prey.rect.centery - self.rect.centery) < 15):
                 self.ingest += 1
                 prey.life = False
 
@@ -829,20 +1005,44 @@ class Ciliate(Paramecium):
     id = 0
     evolving = False
     gene = {'File': 'ciliate.dat'}
-    alleles = { 1:(2,6), 2:(2,6), 3:(0,2), 4:(2,6), 5:(0,2), 6:(2,6), 7:(25,51), 8:(75,301), 9:(-6,0), 10:(1,7), 11:(25,51), 12:(75,126) }
-    gene_info = { 1:'Velocity Sense Forward', 2:'Velocity Sense Reverse', 3:'Distance Sense Forward[0]', 4:'Distance Sense Forward[1]', 5:'Distance Sense Reverse[0]', 6:'Distance Sense Reverse[1]', 7:'Distance Range[0]', 8:'Distance Range[1]', 9:'Direction Change Rate[0]', 10:'Direction Change Rate[1]', 11:'Direction Change[0]', 12:'Direction Change[1]' }
+    alleles = { 1: (2, 6),
+                2: (2, 6),
+                3: (0, 2),
+                4: (2, 6),
+                5: (0, 2),
+                6: (2, 6),
+                7: (25, 51),
+                8: (75, 301),
+                9: (-6, 0),
+               10: (1, 7),
+               11: (25, 51),
+               12: (75, 126)}
+    gene_info = { 1: 'Velocity Sense Forward',
+                  2: 'Velocity Sense Reverse',
+                  3: 'Distance Sense Forward[0]',
+                  4: 'Distance Sense Forward[1]',
+                  5: 'Distance Sense Reverse[0]',
+                  6: 'Distance Sense Reverse[1]',
+                  7: 'Distance Range[0]',
+                  8: 'Distance Range[1]',
+                  9: 'Direction Change Rate[0]',
+                 10: 'Direction Change Rate[1]',
+                 11: 'Direction Change[0]',
+                 12: 'Direction Change[1]'}
 
-    def __init__(self, matrix, x, y, cell_image='ciliate.png', frames=2, identity=None, inherit=None, mutation_rate=0.5):
-        Paramecium.__init__(self, matrix, x, y, cell_image, frames, identity, inherit, mutation_rate)
+    def __init__(self, matrix, x, y, cell_image='ciliate.png', frames=2,
+                 identity=None, inherit=None, mutation_rate=0.5):
+        Paramecium.__init__(self, matrix, x, y, cell_image, frames,
+                            identity, inherit, mutation_rate)
 
     def set_trait(self, gene):
         #gene = 1:vel_sense_f, 2:vel_sense_r, 3:dist_sense_f-0, 4:dist_sense_f-1, 5:dist_sense_r-0, 6:dist_sense_r-1, 7:dist-0, 8:dist-1, 9:dist_i-0, 10:dist_i-1, 11:dir_f-0, 12:dir_f-1
-        trait = { 'vel_sense_f': gene[1], \
-                  'vel_sense_r': gene[2],  \
-                  'dist_sense_f': lambda: ( 1 * random.choice((gene[3],gene[4])) ), \
-                  'dist_sense_r': lambda: ( 3 * random.choice((gene[5],gene[6])) ), \
-                  'dist': lambda: random.randrange(gene[7],gene[8]), \
-                  'dir_i': lambda: random.randrange(gene[9],gene[10]), \
-                  'dir_f': lambda: random.randrange(gene[11],gene[12]) }
+        trait = {'vel_sense_f': gene[1],
+                 'vel_sense_r': gene[2],
+                 'dist_sense_f': lambda: (1 * random.choice((gene[3],gene[4]))),
+                 'dist_sense_r': lambda: (3 * random.choice((gene[5],gene[6]))),
+                 'dist': lambda: random.randrange(gene[7],gene[8]),
+                 'dir_i': lambda: random.randrange(gene[9],gene[10]),
+                 'dir_f': lambda: random.randrange(gene[11],gene[12])}
         return trait
 
