@@ -402,7 +402,7 @@ class Bacterium(Cell):
                 else:
                     self.sensing = True
                     attract = 1
-            if substance is 'nutrient':
+            if substance == 'nutrient':
                 if (self.matrix.nutrient[self.x,self.y] >
                         self.sense_previous):
                     self.sense_previous = self.matrix.nutrient[self.x,
@@ -412,7 +412,7 @@ class Bacterium(Cell):
                     self.sense_previous = self.matrix.nutrient[self.x,
                                                                self.y]
                     return 0.0
-            elif substance is 'toxin':
+            elif substance == 'toxin':
                 if self.matrix.toxin_presense:
                     if (self.matrix.toxin[self.x,self.y] <
                             self.sense_previous_toxin):
