@@ -10,8 +10,11 @@ import numpy
 import random
 import os
 import pickle
-
-from cells import Algae, Bacterium, Paramecium, Amoeba, Ciliate
+from algae import Algae
+from bacterium import Bacterium
+from paramecium import Paramecium
+from amoeba import Amoeba
+from ciliate import Ciliate
 
 
 class Matrix(object):

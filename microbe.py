@@ -37,7 +37,11 @@ import optparse, sys
 import interphase      #interface control
 from matrix import Matrix
 from control import Control
-from cells import Algae, Bacterium, Paramecium, Amoeba, Ciliate
+from algae import Algae
+from bacterium import Bacterium
+from paramecium import Paramecium
+from amoeba import Amoeba
+from ciliate import Ciliate
 
 
 def program_options():
