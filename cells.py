@@ -47,8 +47,8 @@ class Evolve(object):
                 for genex in range(1,genome+1):
                     gene[genex] = random.randrange(*alleles[genex])
                 if mutation:
-                    mutant_gene = random.choice((gene.keys()))  #mutate single gene
-                    mutant_trait = {mutant_gene: gene[mutant_gene]}
+                    genes = list(gene.keys())
+                    mutant_gene = random.choice(genes)  #mutate single gene
             if inherit:
                 gene = inherit  #clonal division
                 if random.random() > 0.9:   #crossover
